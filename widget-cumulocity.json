@@ -1,0 +1,13 @@
+{
+    "name": "CumulocityVideoWidget",
+    "contextPath": "cumulocity-video-widget",
+    "key": "cumulocity-video-widget-application-key",
+    "contentSecurityPolicy": "default-src 'self'",
+    "description": "DESCRIPTION FOR CumulocityVideoWidget",
+    "icon": {
+        "class": "fa fw fa-database"
+    },
+    "manifest": {
+        "noAppSwitcher": true
+    }
+}

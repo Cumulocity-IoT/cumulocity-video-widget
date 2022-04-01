@@ -1,0 +1,88 @@
+<div class="configSection">
+
+    <div class="row form-group">
+        <div class="col-lg-12">
+            <label class="label-with-help">
+            stream title
+            </label>
+            <input
+            class="form-control"
+            type="text"
+            [ngModelOptions]="{ standalone: true }"
+            [(ngModel)]="this.config.title"
+            (change)="onConfigChanged()"
+            />
+        </div>
+    </div>
+
+    <div class="row form-group">
+      <div class="col-lg-12">
+          <label class="label-with-help">
+          stream url (https)
+          </label>
+          <input
+          class="form-control"
+          type="text"
+          [ngModelOptions]="{ standalone: true }"
+          [(ngModel)]="this.config.streamURL"
+          (change)="onConfigChanged()"
+          />
+      </div>
+    </div>
+
+
+
+    <div class="row form-group">
+        <div class="form-check-inline col-lg-2">
+          <label
+            class="label-with-help"
+            class="form-check-label"
+            for="showcont"
+            translate
+          >
+          </label>
+          <input
+            class="form-check-input"
+            type="checkbox"
+            name="showcont"
+            [(ngModel)]="this.config.showControls"
+            (ngModelChange)="onConfigChanged()"
+          />
+          Show controls controls
+        </div>
+        <div class="form-check-inline col-lg-2">
+          <label
+            class="label-with-help"
+            class="form-check-label"
+            for="autoplay"
+            translate
+          >
+          </label>
+          <input
+            class="form-check-input"
+            type="checkbox"
+            name="autoplay"
+            [(ngModel)]="this.config.autoplay"
+            (ngModelChange)="onConfigChanged()"
+          />
+          Autoplay stream
+        </div>
+        <div class="form-check-inline col-lg-2">
+          <label
+            class="label-with-help"
+            class="form-check-label"
+            for="showop"
+            translate
+          >
+          </label>
+          <input
+            class="form-check-input"
+            type="checkbox"
+            name="showop"
+            [(ngModel)]="this.config.mutestream"
+            (ngModelChange)="onConfigChanged()"
+          />
+          Mute stream
+        </div>
+    </div>
+</div>

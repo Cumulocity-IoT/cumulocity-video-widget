@@ -1,0 +1,20 @@
+.cumulocity-video-widget-container {
+    display: grid;
+    justify-content: center;
+}
+
+.power-production-container {
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.power-production-column {
+    text-align: center;
+}
+
+.power-production-value-label {
+    font-size: 22px;
+    font-weight: bold;
+    color: #008CB9;
+}
