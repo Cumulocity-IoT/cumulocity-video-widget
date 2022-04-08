@@ -34,9 +34,9 @@ import { HttpClientModule } from "@angular/common/http";
             provide: HOOK_COMPONENTS,
             multi: true,
             useValue: {
-                id: "global.presales.cumulocity.video.widget.widget",
-                label: "CumulocityVideoWidget",
-                description: "Description of CumulocityVideoWidget widget",
+                id: "global.presales.cumulocity.video.widget",
+                label: "Video",
+                description: "Plays streaming, on-demand and embedded videos.",
                 component: CumulocityVideoWidget,
                 configComponent: CumulocityVideoWidgetConfig,
                 previewImage: require("@widget-assets/img-preview.png"),

@@ -16,6 +16,7 @@
 * limitations under the License. 
  */
 import { Component, Input, OnInit, OnDestroy } from '@angular/core';
+import * as _ from 'lodash';
 
 @Component({
     selector: "cumulocity-video-widget-config-component",
@@ -24,21 +25,68 @@ import { Component, Input, OnInit, OnDestroy } from '@angular/core';
 })
 export class CumulocityVideoWidgetConfig implements OnInit, OnDestroy {
 
+    @Input() config: any = {};
+
+    public defaultSource;
+
     ngOnInit(): void {
-        this.config.streamURL = 'https://cdnuk001.broadcastcdn.net/KUK-BBCNEWSHD/index.m3u8';
-        this.config.title = "Title";
+        // Editing an existing widget
+        if(_.has(this.config, 'customWidgetData')) {
+            this.config.customWidgetData = _.get(this.config, 'customWidgetData');
+            this.config.customWidgetData.sources.forEach((source) => {
+                if(source.selected === true) {
+                    this.defaultSource = source;
+                }
+            });
+        } else { 
+            // Adding a new widget
+            this.config.customWidgetData = {
+                sources: [{
+                    type: 'stream',
+                    title: '',
+                    url: '',
+                    sanitizedUrl: '',
+                    selected: true
+                }],
+                player: {
+                    autoplay: 1
+                },
+                playlist: {
+                    hide: 0
+                }
+            };
+            this.defaultSource = this.config.customWidgetData.sources[0];
+        }
+    }
+
+    public addSource() {
+        this.config.customWidgetData.sources.push({
+            type: 'stream',
+            title: '',
+            url: '',
+            sanitizedUrl: '',
+            selected: false
+        });
+    }
+
+    public removeSource(i) {
+        this.config.customWidgetData.sources.splice(i, 1);
+    }
+
+    public changeDefaultSource(newDefaultSource) {
+        this.config.customWidgetData.sources.forEach((source) => {
+            if(source.title === newDefaultSource.title && source.url === newDefaultSource.url && source.type === newDefaultSource.type) {
+                source.selected = true;
+                newDefaultSource.selected = true;
+                this.defaultSource = newDefaultSource;
+            } else {
+                source.selected = false;
+            }
+        });
     }
 
     ngOnDestroy(): void {
         //unsubscribe from observables here
-        //really
     }
 
-
-    @Input() config: any = {};
-
-    onConfigChanged(): void {
-        console.log("CONFIG-CHANGED");
-        console.log(this.config);
-    }
 }

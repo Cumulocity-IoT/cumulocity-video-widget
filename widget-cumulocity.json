@@ -1,13 +1,18 @@
 {
-    "name": "CumulocityVideoWidget",
+    "name": "Video Widget",
     "contextPath": "cumulocity-video-widget",
-    "key": "cumulocity-video-widget-application-key",
+    "key": "cumulocity-video-widget-key",
     "contentSecurityPolicy": "default-src 'self'",
-    "description": "DESCRIPTION FOR CumulocityVideoWidget",
+    "description": "Plays streaming, on-demand and embedded videos.",
     "icon": {
         "class": "fa fw fa-database"
     },
     "manifest": {
-        "noAppSwitcher": true
+        "noAppSwitcher": true,
+        "requiredPlatformVersion": "“>=1010.0.4",
+        "version":"1.0.1",
+        "author":"Software AG, Global Presales",
+        "description":"Plays streaming, embedded and on-demand videos.",
+        "license": "Apache 2.0"
     }
 }

@@ -1,88 +1,67 @@
-<div class="configSection">
-
-    <div class="row form-group">
-        <div class="col-lg-12">
-            <label class="label-with-help">
-            stream title
-            </label>
-            <input
-            class="form-control"
-            type="text"
-            [ngModelOptions]="{ standalone: true }"
-            [(ngModel)]="this.config.title"
-            (change)="onConfigChanged()"
-            />
-        </div>
+<div class="row" *ngFor="let source of config.customWidgetData.sources; let i = index;">
+  <div class="col-lg-2">
+    <div class="form-group">
+      <label>Source type</label>
+      <select [(ngModel)]="source.type" required>
+        <option value="stream">Streaming</option>
+        <option value="ondemand">On demand</option>
+        <option value="embed">Embedded</option>
+      </select>
     </div>
-
-    <div class="row form-group">
-      <div class="col-lg-12">
-          <label class="label-with-help">
-          stream url (https)
-          </label>
-          <input
-          class="form-control"
-          type="text"
-          [ngModelOptions]="{ standalone: true }"
-          [(ngModel)]="this.config.streamURL"
-          (change)="onConfigChanged()"
-          />
-      </div>
+  </div>
+  <div class="col-lg-2">
+    <div class="form-group">
+      <label>Title</label>
+      <input type="text" class="form-control" [(ngModel)]="source.title" required />
     </div>
-
-
-
-    <div class="row form-group">
-        <div class="form-check-inline col-lg-2">
-          <label
-            class="label-with-help"
-            class="form-check-label"
-            for="showcont"
-            translate
-          >
-          </label>
-          <input
-            class="form-check-input"
-            type="checkbox"
-            name="showcont"
-            [(ngModel)]="this.config.showControls"
-            (ngModelChange)="onConfigChanged()"
-          />
-          Show controls controls
-        </div>
-        <div class="form-check-inline col-lg-2">
-          <label
-            class="label-with-help"
-            class="form-check-label"
-            for="autoplay"
-            translate
-          >
-          </label>
-          <input
-            class="form-check-input"
-            type="checkbox"
-            name="autoplay"
-            [(ngModel)]="this.config.autoplay"
-            (ngModelChange)="onConfigChanged()"
-          />
-          Autoplay stream
-        </div>
-        <div class="form-check-inline col-lg-2">
-          <label
-            class="label-with-help"
-            class="form-check-label"
-            for="showop"
-            translate
-          >
-          </label>
-          <input
-            class="form-check-input"
-            type="checkbox"
-            name="showop"
-            [(ngModel)]="this.config.mutestream"
-            (ngModelChange)="onConfigChanged()"
-          />
-          Mute stream
-        </div>
+  </div>
+  <div class="col-lg-7">
+    <div class="form-group">
+      <label>URL</label>
+      <input type="text" class="form-control" [(ngModel)]="source.url" required />
     </div>
+  </div>
+  <ng-container *ngIf="i !== 0">
+    <div class="col-lg-1">
+      <button class="btn btn-default" style="margin-top: 24px;" (click)="removeSource(i)" title="Remove source"><i class="c8y-icon c8y-icon-waste-bin"></i></button>
+    </div>
+  </ng-container>
+  
+</div>
+
+<div class="row">
+  <div class="col-lg-2">
+    <div class="form-group">
+      <button class="btn btn-default" (click)="addSource()" title="Add source">Add source</button>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-lg-3">
+    <div class="form-group">
+      <label>Default source</label>
+      <select class="form-control" [ngModel]="defaultSource" (ngModelChange)="changeDefaultSource($event)">
+        <option *ngFor="let source of this.config.customWidgetData.sources" [ngValue]="source">{{source.title}}</option>
+      </select>
+    </div>
+  </div>
+  <div class="col-lg-2" style="margin-top: 24px;">
+    <div class="form-group">
+      <label class="c8y-checkbox">
+        <input type="checkbox" [(ngModel)]="config.customWidgetData.player.autoplay" />
+        <span></span>
+        <span>Autoplay</span>
+      </label>
+    </div>
+  </div>
+  <div class="col-lg-2" style="margin-top: 24px;">
+    <div class="form-group">
+      <label class="c8y-checkbox">
+        <input type="checkbox" [(ngModel)]="config.customWidgetData.playlist.hide" />
+        <span></span>
+        <span>Hide playlist</span>
+      </label>
+    </div>
+  </div>
 </div>

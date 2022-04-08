@@ -36,8 +36,8 @@ import { CumulocityVideoWidget } from "./src/cumulocity-video-widget/cumulocity-
             useValue: [
                 {
                     id: "com.softwareag.globalpresales.cumulocity.video.widget",
-                    label: "CumulocityVideoWidget",
-                    description: "Description of CumulocityVideoWidget widget",
+                    label: "Video",
+                    description: "Plays streaming, on-demand and embedded videos.",
                     component: CumulocityVideoWidget,
                     configComponent: CumulocityVideoWidgetConfig,
                     previewImage: require("@widget-assets/img-preview.png"),

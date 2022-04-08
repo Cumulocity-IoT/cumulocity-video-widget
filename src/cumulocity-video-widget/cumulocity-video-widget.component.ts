@@ -19,7 +19,8 @@
  * @format
  */
 
-import { AfterViewInit, Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
+import { DomSanitizer } from '@angular/platform-browser';
 import * as _ from 'lodash';
 
 var Hls = require('hls.js');
@@ -30,36 +31,141 @@ var Hls = require('hls.js');
     templateUrl: "./cumulocity-video-widget.component.html",
     styleUrls: ["./cumulocity-video-widget.component.css"],
 })
-export class CumulocityVideoWidget implements AfterViewInit {
-    // access the declared DOM element; expose all methods and properties
-    @ViewChild('videoPlayer',{'static':true}) videoElementRef!: ElementRef;
-  
-    // declare and inherit the HTML video methods and its properties
-    videoElement!: HTMLVideoElement;
+export class CumulocityVideoWidget implements OnInit, AfterViewInit {
 
     @Input() config;
 
-    constructor() {
+    @ViewChild('videoPlayer', {'static':false}) videoElementRef!: ElementRef;
+
+    videoElement!: HTMLVideoElement;
+
+    public selectedSource;
+
+    private initializationFailed: boolean = false;
+
+    public topMargin = '';
+
+    constructor(private _sanitizer: DomSanitizer, private changeDetetector: ChangeDetectorRef) {
+    }
+
+    ngOnInit(): void {
+        try {
+            this.config.customWidgetData.sources.forEach((source) => {
+                if(source.url === undefined || source.url === "") {
+                    throw new Error("Source url is blank.");
+                } else {
+                    if(source.type === "embed") {
+                        if(this.config.customWidgetData.player.autoplay === 1 || this.config.customWidgetData.player.autoplay === true) {
+                            if(source.url.indexOf("?") > -1) {
+                                source.sanitizedUrl = source.url + "&autoplay=1&muted=1&mute=1";
+                            } else {
+                                source.sanitizedUrl = source.url + "?autoplay=1&muted=1&mute=1";
+                            }
+                            source.sanitizedUrl = this._sanitizer.bypassSecurityTrustResourceUrl(source.sanitizedUrl);
+                        } else {
+                            source.sanitizedUrl = this._sanitizer.bypassSecurityTrustResourceUrl(source.url);
+                        }
+                    }
+                }
+                if(source.title === undefined || source.title === "") {
+                    throw new Error("Title is blank.");
+                }
+            });
+            this.selectedSource = this.config.customWidgetData.sources[0];
+        } catch(err) {
+            this.initializationFailed = true;
+            console.log("Video widget - "+err);
+        }
     }
 
     async ngAfterViewInit(): Promise<void> {
-        // the element could be either a wrapped DOM element or a nativeElement
+        try {
+            this.configureTopMarginRequired();
+            if(!this.initializationFailed) {
+                this.config.customWidgetData.sources.forEach((source) => {
+                    if(source.selected === true) {
+                        this.selectedSource = source;
+                        if(this.selectedSource.type === "stream") {
+                            if(this.videoElementRef === undefined) {
+                                throw new Error("Video element not found.");
+                            } else {
+                                this.showStreamingVideoPlayer();
+                            }
+                        } else if(this.selectedSource.type === "ondemand") {
+                            if(this.videoElementRef === undefined) {
+                                throw new Error("Video element not found.");
+                            } else {
+                                this.showOnDemandVideoPlayer();
+                            }
+                        }
+                    }
+                });
+            }
+        } catch(err) {
+            console.log("Video widget - "+err);
+        }
+        return;
+    }
+
+    private showStreamingVideoPlayer(): void {
         this.videoElement = this.videoElementRef.nativeElement;
-
+        this.videoElement.muted = true;
         if (Hls.isSupported()) {
-            console.log("Video streaming supported by HLSjs");
-
             var hls = new Hls();
-            //hls.loadSource('https://multiplatform-f.akamaihd.net/i/multi/will/bunny/big_buck_bunny_,640x360_400,640x360_700,640x360_1000,950x540_1500,.f4v.csmil/master.m3u8');
-            hls.loadSource(this.config.streamURL);
+            hls.loadSource(this.selectedSource.url);
             hls.attachMedia(this.videoElement);
             hls.on(Hls.Events.MANIFEST_PARSED, () => {
                 this.videoElement.play();
             });
+        } else {
+            throw new Error("HLS library not supported.");
         }
-        //"http://a.files.bbci.co.uk/media/live/manifesto/audio_video/simulcast/hls/uk/abr_hdtv/ak/bbc_one_hd.m3u8"
-        return;
     }
 
+    private showOnDemandVideoPlayer(): void {
+        this.videoElement = this.videoElementRef.nativeElement;
+        this.videoElement.src = this.selectedSource.url;
+        this.videoElement.muted = true;
+        this.videoElement.play();
+    }
+
+    public changeSource(newSource): void {
+        this.config.customWidgetData.sources.forEach((source) => {
+            if(source.title === newSource.title && source.url === newSource.url && source.type === newSource.type) {
+                this.selectedSource = newSource;
+                this.changeDetetector.detectChanges();
+                if(this.selectedSource.type === "stream") {
+                    if(this.videoElementRef === undefined) {
+                        throw new Error("Video element not found.");
+                    } else {
+                        this.showStreamingVideoPlayer();
+                    }
+                } else if(this.selectedSource.type === "ondemand") {
+                    if(this.videoElementRef === undefined) {
+                        throw new Error("Video element not found.");
+                    } else {
+                        this.showOnDemandVideoPlayer();
+                    }
+                }
+            }
+        });
+    }
+
+    // Configure top margin within the widget. This is on the basis if the Widget title is set to hidden or not.
+    private configureTopMarginRequired(): void {
+        let allWidgets: NodeListOf<Element> = document.querySelectorAll('.dashboard-grid-child');
+        allWidgets.forEach((w:Element) => {
+            let widgetElement: Element = w.querySelector('div > div > div > c8y-dynamic-component > lib-cumulocity-video-widget');
+            if(widgetElement !== undefined && widgetElement !== null) {
+                let widgetTitleElement: Element = w.querySelector('div > div > div > c8y-dashboard-child-title');
+                const widgetTitleDisplayValue: string = window.getComputedStyle(widgetTitleElement).getPropertyValue('display');
+                if(widgetTitleDisplayValue !== undefined && widgetTitleDisplayValue !== null && widgetTitleDisplayValue === 'none') {
+                    this.topMargin = '10px';
+                } else {
+                    this.topMargin = '0';
+                }
+            }
+        });
+    }
 
 }
