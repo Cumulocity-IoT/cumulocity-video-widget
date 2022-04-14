@@ -1,6 +1,6 @@
 # Video Widget for Cumulocity IoT
 
-This widget allows to watch streaming videos (in hls format), on-demand videos like .mp4 and embedded videos like YouTube or Vimeo.
+This widget allows streaming videos from sources such as HLS streams, on-demand videos (such as MP4, MKV, MOV) from URL and embedded YouTube, Vimeo, etc. videos. Please note that links must be HTTPS and Cross-Origin access enabled.
 
 ![Preview](src/cumulocity-video-widget/assets/img-preview.png)
 
@@ -16,16 +16,17 @@ This widget allows to watch streaming videos (in hls format), on-demand videos l
 2. Click on `Add widget`.
 3. Choose `Video` widget.
 4. `Title` is the title of widget. Provide a relevant name. You may choose to hide this. Go to `Appearance` tab and choose `Hidden` under `Widget header style`.
-5. `Source type` is whether the video is streamed, on-demand or embedded.
-6. `Title` is a name for the video to appear in playlist.
-7. `URL` is the url of the video.
-8. `Delete icon` is to delete a source from the list.
-9. `Add source` is to add a new source to the list.
-10. `Default source` is the video that will be played by default on page load.
-11. `Autoplay` is whether video should start playing automatically after page load.
-12. `Hide playlist` is to hide or unhide the playlist.
-13. Click `Save` to add the widget on the dashboard.
-14. In case you see unexpected results on the widget, refer to browser console to see if there are error logs.
+5. `Upload playlist` is to upload a playlist file. Only .m3u playlist file is supported.
+6. `Source type` is whether the video is streamed, on-demand or embedded.
+7. `Title` is a name for the video to appear in playlist.
+8. `URL` is the url of the video.
+9. `Delete icon` is to delete a source from the list.
+10. `Add source` is to add a new source to the list.
+11. `Default source` is the video that will be played by default on page load.
+12. `Playlist & buttons position` allows to hide the playlist and buttons or show it on top or bottom of the video.
+13. `Autoplay` is whether video should start playing automatically after page load.
+14. Click `Save` to add the widget on the dashboard.
+15. In case you see unexpected results on the widget, refer to browser console to see if there are error logs.
 
 ### Development - to do the enhancements and testing locally
 1. Clone the repository on local machine using `git clone https://github.com/SoftwareAG/cumulocity-video-widget.git`.

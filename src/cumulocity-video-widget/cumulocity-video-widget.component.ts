@@ -40,8 +40,10 @@ export class CumulocityVideoWidget implements OnInit, AfterViewInit {
     videoElement!: HTMLVideoElement;
 
     public selectedSource;
+    public selectedSourceIndex;
+    public sourcesLength;
 
-    private initializationFailed: boolean = false;
+    public initializationFailed: boolean = false;
 
     public topMargin = '';
 
@@ -50,6 +52,7 @@ export class CumulocityVideoWidget implements OnInit, AfterViewInit {
 
     ngOnInit(): void {
         try {
+            this.sourcesLength = this.config.customWidgetData.sources.length;
             this.config.customWidgetData.sources.forEach((source) => {
                 if(source.url === undefined || source.url === "") {
                     throw new Error("Source url is blank.");
@@ -72,6 +75,7 @@ export class CumulocityVideoWidget implements OnInit, AfterViewInit {
                 }
             });
             this.selectedSource = this.config.customWidgetData.sources[0];
+            this.selectedSourceIndex = 0;
         } catch(err) {
             this.initializationFailed = true;
             console.log("Video widget - "+err);
@@ -82,9 +86,10 @@ export class CumulocityVideoWidget implements OnInit, AfterViewInit {
         try {
             this.configureTopMarginRequired();
             if(!this.initializationFailed) {
-                this.config.customWidgetData.sources.forEach((source) => {
+                this.config.customWidgetData.sources.forEach((source, index) => {
                     if(source.selected === true) {
                         this.selectedSource = source;
+                        this.selectedSourceIndex = index;
                         if(this.selectedSource.type === "stream") {
                             if(this.videoElementRef === undefined) {
                                 throw new Error("Video element not found.");
@@ -114,9 +119,11 @@ export class CumulocityVideoWidget implements OnInit, AfterViewInit {
             var hls = new Hls();
             hls.loadSource(this.selectedSource.url);
             hls.attachMedia(this.videoElement);
-            hls.on(Hls.Events.MANIFEST_PARSED, () => {
-                this.videoElement.play();
-            });
+            if(this.config.customWidgetData.player.autoplay === 1 || this.config.customWidgetData.player.autoplay === true) {
+                hls.on(Hls.Events.MANIFEST_PARSED, () => {
+                    this.videoElement.play();
+                });
+            }
         } else {
             throw new Error("HLS library not supported.");
         }
@@ -126,13 +133,16 @@ export class CumulocityVideoWidget implements OnInit, AfterViewInit {
         this.videoElement = this.videoElementRef.nativeElement;
         this.videoElement.src = this.selectedSource.url;
         this.videoElement.muted = true;
-        this.videoElement.play();
+        if(this.config.customWidgetData.player.autoplay === 1 || this.config.customWidgetData.player.autoplay === true) {
+            this.videoElement.play();
+        }
     }
 
     public changeSource(newSource): void {
-        this.config.customWidgetData.sources.forEach((source) => {
+        this.config.customWidgetData.sources.forEach((source, index) => {
             if(source.title === newSource.title && source.url === newSource.url && source.type === newSource.type) {
                 this.selectedSource = newSource;
+                this.selectedSourceIndex = index;
                 this.changeDetetector.detectChanges();
                 if(this.selectedSource.type === "stream") {
                     if(this.videoElementRef === undefined) {
@@ -151,6 +161,26 @@ export class CumulocityVideoWidget implements OnInit, AfterViewInit {
         });
     }
 
+    public playPrevious(): void {
+        try {
+            if(this.selectedSourceIndex > 0) {
+                this.changeSource(this.config.customWidgetData.sources[this.selectedSourceIndex - 1]);
+            }
+        } catch(e) {
+            console.log("Video widget - "+e);
+        }
+    }
+
+    public playNext(): void {
+        try {
+            if(this.selectedSourceIndex < this.sourcesLength - 1) {
+                this.changeSource(this.config.customWidgetData.sources[this.selectedSourceIndex + 1]);
+            }
+        } catch(e) {
+            console.log("Video widget - "+e);
+        }
+    }
+
     // Configure top margin within the widget. This is on the basis if the Widget title is set to hidden or not.
     private configureTopMarginRequired(): void {
         let allWidgets: NodeListOf<Element> = document.querySelectorAll('.dashboard-grid-child');
@@ -167,5 +197,7 @@ export class CumulocityVideoWidget implements OnInit, AfterViewInit {
             }
         });
     }
+
+   
 
 }

@@ -37,7 +37,7 @@ import { CumulocityVideoWidget } from "./src/cumulocity-video-widget/cumulocity-
                 {
                     id: "com.softwareag.globalpresales.cumulocity.video.widget",
                     label: "Video",
-                    description: "Plays streaming, on-demand and embedded videos.",
+                    description: "Plays streaming videos from sources such as HLS streams, on-demand videos (such as MP4, MKV, MOV) from URL and embedded YouTube, Vimeo, etc. videos. Please note that links must be HTTPS and Cross-Origin access enabled.",
                     component: CumulocityVideoWidget,
                     configComponent: CumulocityVideoWidgetConfig,
                     previewImage: require("@widget-assets/img-preview.png"),

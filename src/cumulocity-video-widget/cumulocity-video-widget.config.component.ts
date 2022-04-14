@@ -28,6 +28,7 @@ export class CumulocityVideoWidgetConfig implements OnInit, OnDestroy {
     @Input() config: any = {};
 
     public defaultSource;
+    public playlistUploadMsg: string = '';
 
     ngOnInit(): void {
         // Editing an existing widget
@@ -49,10 +50,10 @@ export class CumulocityVideoWidgetConfig implements OnInit, OnDestroy {
                     selected: true
                 }],
                 player: {
-                    autoplay: 1
+                    autoplay: true
                 },
                 playlist: {
-                    hide: 0
+                    position: 'top'
                 }
             };
             this.defaultSource = this.config.customWidgetData.sources[0];
@@ -87,6 +88,62 @@ export class CumulocityVideoWidgetConfig implements OnInit, OnDestroy {
 
     ngOnDestroy(): void {
         //unsubscribe from observables here
+    }
+
+    public uploadPlaylist(files: FileList): void {
+        try {
+            let uploadedFile: File = files[0];
+            let fileReader: FileReader = new FileReader();
+
+            fileReader.onload = (e) => {                
+                this.parsePlaylistFile(fileReader.result);
+            }
+            this.playlistUploadMsg = "Parsing. Please wait...";
+            fileReader.readAsText(uploadedFile);
+        } catch(e) {
+            this.playlistUploadMsg = "Parsing failed..."
+            console.log("Video widget: "+e);
+        }
+        
+    }
+
+    private parsePlaylistFile(playlistContent: string | ArrayBuffer) {
+        if(playlistContent === undefined || playlistContent === null) {
+            throw new Error("Playlist is empty.");
+        } else {
+            let playlistLines = playlistContent.toString().split("\n");
+            let linesLength = playlistLines.length;
+
+            this.config.customWidgetData.sources = [];
+           
+            let i=0;
+            while(i < linesLength) {
+                if(playlistLines[i].startsWith("#EXTINF")) {
+                    let playlistLineSplitted = playlistLines[i].split(",");
+                    if(playlistLines[i+1].startsWith("https")) {
+                        this.config.customWidgetData.sources.push({
+                            type: 'stream',
+                            title: playlistLineSplitted[1].trim(),
+                            url: playlistLines[i+1],
+                            sanitizedUrl: '',
+                            selected: false
+                        });
+                    }
+                    i = i+2;
+                } else {
+                    i = i+1;
+                }
+            }
+        
+            if(this.config.customWidgetData.sources.length === 0) {
+                this.playlistUploadMsg = "Invalid or empty file!";
+            } else {
+                this.config.customWidgetData.sources[0].selected = true;
+                this.playlistUploadMsg = "Parsing successful!";
+            }
+            
+        }
+        
     }
 
 }
