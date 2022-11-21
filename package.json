@@ -1,6 +1,6 @@
 {
     "name": "cumulocity-video-widget",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "description": "",
     "main": "index.js",
     "scripts": {
@@ -41,7 +41,7 @@
         "@c8y/cli": "1010.0.8",
         "caniuse-lite": "1.0.30001237",
         "css-loader": "3.5.3",
-        "gulp": "4.0.2",
+        "gulp": "^4.0.2",
         "gulp-bump": "3.2.0",
         "gulp-filter": "6.0.0",
         "gulp-replace": "1.0.0",

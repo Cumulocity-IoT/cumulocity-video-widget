@@ -54,14 +54,6 @@
 <div class="row">
   <div class="col-lg-3">
     <div class="form-group">
-      <label>Default source</label>
-      <select class="form-control" [ngModel]="defaultSource" (ngModelChange)="changeDefaultSource($event)">
-        <option *ngFor="let source of this.config.customWidgetData.sources" [ngValue]="source">{{source.title}}</option>
-      </select>
-    </div>
-  </div>
-  <div class="col-lg-3">
-    <div class="form-group">
       <label>Playlist & buttons position</label>
       <select class="form-control" [(ngModel)]="config.customWidgetData.playlist.position">
         <option value="top">Top</option>
@@ -79,5 +71,35 @@
       </label>
     </div>
   </div>
-  
+</div>
+
+<div class="row">
+  <div class="col-lg-3">
+    <div class="form-group">
+      <label>Default source</label>
+      <select class="form-control" [ngModel]="defaultSource" (ngModelChange)="changeDefaultSource($event)">
+        <option *ngFor="let source of this.config.customWidgetData.sources" [ngValue]="source">{{source.title}}</option>
+      </select>
+    </div>
+  </div>
+  <div class="col-lg-2" style="margin-top: 24px;">
+    <div class="form-group">
+      <label class="c8y-checkbox">
+        <input type="checkbox" [(ngModel)]="config.customWidgetData.player.loop" [disabled]="defaultSource.type !== 'ondemand'" />
+        <span></span>
+        <span>Loop</span>
+      </label>
+    </div>
+  </div>
+  <div class="col-lg-3">
+    <div class="form-group">
+      <!-- Measurement -->
+      <label for="measurement" translate>
+        Measurement
+      </label>
+      <select class="form-control" name="measurement" [disabled]="measurementSeriesDisabled || defaultSource.type !== 'ondemand'" [(ngModel)]="this.config.customWidgetData.measurement" (focus)="loadFragmentSeries()">
+        <option [ngValue]="seriesValue" *ngFor="let seriesValue of supportedSeries">{{seriesValue}}</option>
+      </select>
+    </div>
+  </div>
 </div>

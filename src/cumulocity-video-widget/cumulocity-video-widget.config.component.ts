@@ -16,6 +16,9 @@
 * limitations under the License. 
  */
 import { Component, Input, OnInit, OnDestroy } from '@angular/core';
+import { IFetchResponse } from '@c8y/client';
+import { AlertService } from '@c8y/ngx-components';
+import { FetchClient } from '@c8y/ngx-components/api';
 import * as _ from 'lodash';
 
 @Component({
@@ -30,9 +33,16 @@ export class CumulocityVideoWidgetConfig implements OnInit, OnDestroy {
     public defaultSource;
     public playlistUploadMsg: string = '';
 
+    private oldDeviceId: string = '';
+    public supportedSeries: string[];
+    public measurementSeriesDisabled: boolean = false;
+
+    constructor(private fetchClient: FetchClient, private alertService: AlertService) {}
+
     ngOnInit(): void {
         // Editing an existing widget
         if(_.has(this.config, 'customWidgetData')) {
+            this.loadFragmentSeries();
             this.config.customWidgetData = _.get(this.config, 'customWidgetData');
             this.config.customWidgetData.sources.forEach((source) => {
                 if(source.selected === true) {
@@ -50,13 +60,35 @@ export class CumulocityVideoWidgetConfig implements OnInit, OnDestroy {
                     selected: true
                 }],
                 player: {
-                    autoplay: true
+                    autoplay: true,
+                    loop: false,
+                    startTimeFromMeasurement: false
                 },
                 playlist: {
                     position: 'top'
-                }
+                },
+                measurement: ''
             };
             this.defaultSource = this.config.customWidgetData.sources[0];
+        }
+    }
+
+    public async loadFragmentSeries(): Promise<void> {
+        if( !_.has(this.config, "device.id")) {
+          console.log("Cannot get fragment series because device id is blank.");
+        } else {
+            if(this.oldDeviceId !== this.config.device.id) {
+                this.measurementSeriesDisabled = true;
+                this.fetchClient.fetch('/inventory/managedObjects/'+ this.config.device.id +'/supportedSeries').then((resp: IFetchResponse) => {
+                    this.measurementSeriesDisabled = false;
+                    if(resp !== undefined) {
+                        resp.json().then((jsonResp) => {
+                            this.supportedSeries = jsonResp.c8y_SupportedSeries;
+                        });
+                    }
+                    this.oldDeviceId = this.config.device.id;
+                });
+            }
         }
     }
 

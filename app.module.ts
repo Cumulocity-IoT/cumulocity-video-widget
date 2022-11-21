@@ -44,7 +44,7 @@ import { CumulocityVideoWidget } from "./src/cumulocity-video-widget/cumulocity-
                     data: {
                         ng1: {
                             options: {
-                                noDeviceTarget: true,
+                                noDeviceTarget: false,
                                 deviceTargetNotRequired: true,
                             },
                         }

@@ -19,8 +19,9 @@
  * @format
  */
 
-import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
+import { Realtime } from '@c8y/ngx-components/api';
 import * as _ from 'lodash';
 
 var Hls = require('hls.js');
@@ -31,7 +32,7 @@ var Hls = require('hls.js');
     templateUrl: "./cumulocity-video-widget.component.html",
     styleUrls: ["./cumulocity-video-widget.component.css"],
 })
-export class CumulocityVideoWidget implements OnInit, AfterViewInit {
+export class CumulocityVideoWidget implements OnInit, AfterViewInit, OnDestroy {
 
     @Input() config;
 
@@ -47,7 +48,9 @@ export class CumulocityVideoWidget implements OnInit, AfterViewInit {
 
     public topMargin = '';
 
-    constructor(private _sanitizer: DomSanitizer, private changeDetetector: ChangeDetectorRef) {
+    private subscription: object = null;
+
+    constructor(private _sanitizer: DomSanitizer, private changeDetetector: ChangeDetectorRef, private realtimeService: Realtime) {
     }
 
     ngOnInit(): void {
@@ -133,8 +136,31 @@ export class CumulocityVideoWidget implements OnInit, AfterViewInit {
         this.videoElement = this.videoElementRef.nativeElement;
         this.videoElement.src = this.selectedSource.url;
         this.videoElement.muted = true;
+        if(this.config.customWidgetData.player.loop === 1 || this.config.customWidgetData.player.loop === true) {
+            this.videoElement.loop = true;
+        }
         if(this.config.customWidgetData.player.autoplay === 1 || this.config.customWidgetData.player.autoplay === true) {
             this.videoElement.play();
+        }
+        if(this.config.device !== undefined && this.config.device !== null && this.config.device.id !== undefined && this.config.device.id !== null && this.config.device.id !== "") {
+            if(this.config.customWidgetData.measurement !== undefined && this.config.customWidgetData.measurement !== null && this.config.customWidgetData.measurement !== "") {
+                let fragmentSeries = this.config.customWidgetData.measurement.split(".");
+                let fragment = fragmentSeries[0];
+                let series = fragmentSeries[1];
+                this.subscription = this.realtimeService.subscribe('/measurements/'+this.config.device.id, (data) => {
+                    try {
+                        if(data.data.data[fragment] && data.data.data[fragment][series]) {
+                            this.videoElement.currentTime = data.data.data[fragment][series].value;
+                            // Start playing the video if its not playing already from the specific timestamp
+                            if(this.videoElement.paused) {
+                                this.videoElement.play();
+                            }
+                        } 
+                    } catch(e) {
+                        console.log("Video widget - "+e);
+                    }
+                });
+            }
         }
     }
 
@@ -198,6 +224,10 @@ export class CumulocityVideoWidget implements OnInit, AfterViewInit {
         });
     }
 
-   
+    ngOnDestroy(): void {
+        if(this.subscription !== undefined && this.subscription !== null) {
+            this.realtimeService.unsubscribe(this.subscription);
+        }
+    }
 
 }

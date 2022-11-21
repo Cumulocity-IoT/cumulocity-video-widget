@@ -1,6 +1,6 @@
 # Video Widget for Cumulocity IoT
 
-This widget allows streaming videos from sources such as HLS streams, on-demand videos (such as MP4, MKV, MOV) from URL and embedded YouTube, Vimeo, etc. videos. Please note that links must be HTTPS and Cross-Origin access enabled.
+This widget allows streaming videos from sources such as HLS streams, on-demand videos (such as MP4, MKV, MOV) from URL and embedded YouTube, Vimeo, etc. videos. In addition, on-demand videos can be synchronized with device measurements representing video timestamp in seconds. Please note that links must be HTTPS and have Cross-Origin access enabled.
 
 ![Preview](src/cumulocity-video-widget/assets/img-preview.png)
 
@@ -16,17 +16,20 @@ This widget allows streaming videos from sources such as HLS streams, on-demand 
 2. Click on `Add widget`.
 3. Choose `Video` widget.
 4. `Title` is the title of widget. Provide a relevant name. You may choose to hide this. Go to `Appearance` tab and choose `Hidden` under `Widget header style`.
-5. `Upload playlist` is to upload a playlist file. Only .m3u playlist file is supported.
-6. `Source type` is whether the video is streamed, on-demand or embedded.
-7. `Title` is a name for the video to appear in playlist.
-8. `URL` is the url of the video.
-9. `Delete icon` is to delete a source from the list.
-10. `Add source` is to add a new source to the list.
-11. `Default source` is the video that will be played by default on page load.
+5. `Target assets or devices` is to select the device. Only select device if you need to synchronize video timestamp with device measurements.
+6. `Upload playlist` is to upload a playlist file. Only .m3u playlist file is supported.
+7. `Source type` is whether the video is streamed, on-demand or embedded.
+8. `Title` is a name for the video to appear in playlist.
+9. `URL` is the url of the video.
+10. `Delete icon` is to delete a source from the list. Only visible when there more than one source.
+11. `Add source` is to add a new source to the list.
 12. `Playlist & buttons position` allows to hide the playlist and buttons or show it on top or bottom of the video.
 13. `Autoplay` is whether video should start playing automatically after page load.
-14. Click `Save` to add the widget on the dashboard.
-15. In case you see unexpected results on the widget, refer to browser console to see if there are error logs.
+14. `Default source` is the video that will be played by default on page load.
+15. `Loop` is whether the video needs to be replayed. It is only applicable if the default source is of type on-demand.
+14. `Measurement` is the device measurements coming in seconds to which video timestamp needs to be synchornized. It is only applicable if the default source is of type on-demand.
+15. Click `Save` to add the widget on the dashboard.
+16. In case you see unexpected results on the widget, refer to browser console to see if there are error logs.
 
 ### Development - to do the enhancements and testing locally
 1. Clone the repository on local machine using `git clone https://github.com/SoftwareAG/cumulocity-video-widget.git`.
