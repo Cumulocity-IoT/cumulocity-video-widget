@@ -2,6 +2,9 @@
 
 This widget allows streaming videos from sources such as HLS streams, on-demand videos (such as MP4, MKV, MOV) from URL and embedded YouTube, Vimeo, etc. videos. In addition, on-demand videos can be synchronized with device measurements representing video timestamp in seconds. Please note that links must be HTTPS and have Cross-Origin access enabled.
 
+### ⚠️ This project is no longer under development. Please use [cumulocity-video-widget-plugin](https://github.com/SoftwareAG/cumulocity-video-widget-plugin) for Application Builder >=2.x.x and Cumulocity >=1016.x.x⚠️
+
+
 ![Preview](src/cumulocity-video-widget/assets/img-preview.png)
 
 ### Installation - for the dashboards using Runtime Widget Loader
